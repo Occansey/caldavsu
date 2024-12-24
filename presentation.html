@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendrier Master SU</title>
+    <style>
+        /* Dark futuristic background */
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: radial-gradient(circle at center, #0a0a0a, #000000);
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 60px; /* Increased spacing between groups */
+        }
+
+        /* Button container with group spacing */
+        .group-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 50px; /* More space between groups */
+        }
+
+        /* Group label */
+        .group-label {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            color: #ffffff;
+        }
+
+        /* Rounded button design */
+        .dynamic-button {
+            background: linear-gradient(145deg, #202020, #2c2c2c);
+            color: #ffffff;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2), inset 0 0 10px rgba(0, 255, 255, 0.1);
+        }
+
+        /* Glowing hover effect */
+        .dynamic-button:hover {
+            transform: translateY(-5px) scale(1.05);
+        }
+
+        /* Tiny square shapes, visible by default but move only on hover */
+        .dynamic-button .shape {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 2px;
+            animation: none; /* No movement by default */
+            transition: all 0.4s ease; /* Smooth transition for hover effect */
+        }
+
+        /* Positions for shapes around buttons */
+        .dynamic-button .shape:nth-child(1) { top: -15px; left: 10%; }
+        .dynamic-button .shape:nth-child(2) { top: -15px; right: 10%; }
+        .dynamic-button .shape:nth-child(3) { bottom: -15px; left: 10%; }
+        .dynamic-button .shape:nth-child(4) { bottom: -15px; right: 10%; }
+
+        /* Animation for moving shapes on hover */
+        .dynamic-button:hover .shape {
+            animation: move-shape 2s infinite ease-in-out; /* Faster movement */
+        }
+
+        /* Keyframe for moving shapes (faster movement) */
+        @keyframes move-shape {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+            50% {
+                transform: translate(-10px, 10px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="button-container"></div>
+
+    <script>
+        const elements=['M1_ANDROIDE', 'M2_ANDROIDE', 'M1_BIM', 'M2_BIM', 'M1_DAC', 'M2_DAC', 'M1_IMA', 'M2_IMA', 'M1_IQ', 'M2_IQ', 'M1_DIGITAL', 'M1_RES', 'M1_RES_ALT', 'M2_DIGITAL', 'M2_RES', 'M2_RES-DEV', 'M2_RES-SEC', 'M1_SAR', 'M2_SAR', 'M1_SESI', 'M2_SESI', 'M1_CCA ', 'M1_MSI', 'M2_CCA ', 'M2_MSI', 'M1_STL', 'M2_STL', 'M2_STL-INSTA']
+        console.log(elements)
+        // Group elements by suffix
+        const groups = {};
+        elements.forEach(el => {
+            const title = el;
+            if (title && /M\d+_\w+-?\w+\s?/.test(title)) { // Match pattern M*_*
+                const suffix = title.split('_')[1].split('-')[0]; // Extract the suffix
+                if (!groups[suffix]) groups[suffix] = [];
+                groups[suffix].push(title);
+            }
+        });
+
+        // Light glowing colors for groups
+        const groupColors = [
+            "#d4a5ff", // Light purple
+            "#f9c4d2", // Light pink
+            "#283655", // Dark blue
+            "#b8f2e6", // Light green
+            "#ffffff", // White
+            "#fffa65", // Yellow
+            "#7df9ff"  // Turquoise
+        ];
+
+        // Button container
+        const buttonContainer = document.getElementById("button-container");
+
+        // Create groups and buttons
+        Object.keys(groups).forEach((suffix, index) => {
+            // Create group container
+            const groupDiv = document.createElement("div");
+            groupDiv.className = "group-container";
+
+            // Add group label
+            const groupLabel = document.createElement("div");
+            groupLabel.className = "group-label";
+            groupLabel.textContent = suffix;
+            buttonContainer.appendChild(groupLabel);
+
+            // Add buttons to group
+            groups[suffix].forEach(title => {
+                const button = document.createElement("button");
+                button.className = "dynamic-button";
+                button.textContent = title;
+
+                // Assign group-specific glow color
+                const color = groupColors[index % groupColors.length];
+                button.style.boxShadow = `0 0 15px ${color}, inset 0 0 10px ${color}`;
+                button.style.background = `linear-gradient(145deg, ${color}33, ${color}99)`;
+
+                // Add square shapes
+                for (let i = 0; i < 4; i++) {
+                    const shape = document.createElement("div");
+                    shape.className = "shape";
+                    shape.style.background = color;
+                    button.appendChild(shape);
+                }
+
+                // Add click event to log the title
+                button.addEventListener("click", () => {
+                    createCalendar(button.textContent)
+                });
+                groupDiv.appendChild(button);
+            });
+
+            // Add group container to main container
+            buttonContainer.appendChild(groupDiv);
+        });
+    async function createCalendar(calendar) {
+    const xmlData = await getResponse(calendar);
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlData, "text/xml");
+    
+    // Set up namespace for querying
+    const namespace = "urn:ietf:params:xml:ns:caldav";
+    const calendarDataBlocks = xmlDoc.getElementsByTagNameNS(namespace, "calendar-data");
+    
+    let combinedIcs = "BEGIN:VCALENDAR\nCALSCALE:GREGORIAN\nVERSION:2.0\n";
+
+    for (const block of calendarDataBlocks) {
+        const icsContent = block.textContent.trim();
+        const events = icsContent
+            .split('\n')
+            .filter(line => !line.startsWith("BEGIN:VCALENDAR") && !line.startsWith("END:VCALENDAR"))
+            .join('\n');
+        combinedIcs += events + "\n";
+    }
+
+    combinedIcs += "END:VCALENDAR";
+
+    // In a browser environment, create and download the file
+    const blob = new Blob([combinedIcs], { type: 'text/calendar' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${calendar}.ics`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+
+    console.log(`All events have been combined in ${calendar}.ics`);
+    }
+    const separate=(title)=>{
+        const pre=title.split('_')[0]+'_';
+        const next=title.slice(3);
+        var end=title
+        console.log(next,'next')
+        if (next =='DIGITAL')end= pre+'RES-EIT-Digital'
+        if (next =='RES_ALT')end= pre+'RES-ITESCIA'
+        if (next =='RES-SEC')end= pre+'RES-ITESCIA'
+        if (next =='RES-DEV')end= pre+'RES-INSTA'
+        if (next =='MSI')end= pre+'SFPN-AFTI'
+        if (next =='CCA ')end= pre+'SFPN'
+        console.log(end)
+        return {
+            end:end,
+            fil:end.split('_')[1].split('-')[0]
+        }
+    }
+    async function getResponse(calendar) {
+        const {fil,end}=separate(calendar)
+        const url = `https://cal.ufr-info-p6.jussieu.fr/caldav.php/${fil}/${end}/`;
+        const payload = `<?xml version="1.0" encoding="UTF-8"?>
+            <L:calendar-query xmlns:L="urn:ietf:params:xml:ns:caldav">
+                <D:prop xmlns:D="DAV:">
+                    <D:getcontenttype/>
+                    <D:getetag/>
+                    <L:calendar-data/>
+                </D:prop>
+                <L:filter>
+                    <L:comp-filter name="VCALENDAR">
+                        <L:comp-filter name="VEVENT">
+                            <L:time-range start="20250102T000000Z" end="20250725T000000Z"/>
+                        </L:comp-filter>
+                    </L:comp-filter>
+                </L:filter>
+            </L:calendar-query>`;
+
+        const response = await fetch(url, {
+            method: 'REPORT',
+            body: payload,
+            headers: {
+                'Authorization': 'Basic ' + btoa('student.master:guest'),
+                'Content-Type': 'application/xml'
+            }
+        });
+
+        return await response.text();
+    }
+
+// Example usage:
+// createCalendar(2025, "your_fil_here");
+    </script>
+</body>
+</html>

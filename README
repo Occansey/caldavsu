@@ -1,0 +1,27 @@
+link to file https://caldavsu.s3.eu-west-3.amazonaws.com/calendar.html
+-Files
+calendar_caldav.py
+    ---intial code in python retrieves calendar according to a year and Course, uncomplete because some Requests don't use that same format.
+calendar.html
+    ---frontpage of the website
+index.js
+    ---final code deployed on AWS, retrieves all the calendars according to the list of requests
+node_modules
+    ---modules folder
+package.json
+    ---config file 
+package-lock.json
+    ---config file for modules
+presentation.html
+    ---V1 downloading calendars
+README
+    ---this file
+trigger.zip
+    ---uploaded folder, zipped folder of index.js and modules
+
+
+
+
+
+
+

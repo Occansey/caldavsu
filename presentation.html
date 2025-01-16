@@ -96,8 +96,8 @@
     <div id="button-container"></div>
 
     <script>
+        console.log('welcome to caldav dev mode')
         const elements=['M1_ANDROIDE', 'M2_ANDROIDE', 'M1_BIM', 'M2_BIM', 'M1_DAC', 'M2_DAC', 'M1_IMA', 'M2_IMA', 'M1_IQ', 'M2_IQ', 'M1_DIGITAL', 'M1_RES', 'M1_RES_ALT', 'M2_DIGITAL', 'M2_RES', 'M2_RES-DEV', 'M2_RES-SEC', 'M1_SAR', 'M2_SAR', 'M1_SESI', 'M2_SESI', 'M1_CCA ', 'M1_MSI', 'M2_CCA ', 'M2_MSI', 'M1_STL', 'M2_STL', 'M2_STL-INSTA']
-        console.log(elements)
         // Group elements by suffix
         const groups = {};
         elements.forEach(el => {
@@ -156,6 +156,7 @@
 
                 // Add click event to log the title
                 button.addEventListener("click", () => {
+                    console.log('Retrieving calendar...')
                     createCalendar(button.textContent)
                 });
                 groupDiv.appendChild(button);
@@ -203,14 +204,12 @@
         const pre=title.split('_')[0]+'_';
         const next=title.slice(3);
         var end=title
-        console.log(next,'next')
         if (next =='DIGITAL')end= pre+'RES-EIT-Digital'
         if (next =='RES_ALT')end= pre+'RES-ITESCIA'
         if (next =='RES-SEC')end= pre+'RES-ITESCIA'
         if (next =='RES-DEV')end= pre+'RES-INSTA'
         if (next =='MSI')end= pre+'SFPN-AFTI'
         if (next =='CCA ')end= pre+'SFPN'
-        console.log(end)
         return {
             end:end,
             fil:end.split('_')[1].split('-')[0]
